@@ -53,6 +53,7 @@ let boxed_integer_name = function
   | Pnativeint -> "nativeint"
   | Pint32 -> "int32"
   | Pint64 -> "int64"
+  | Pint63 -> "int63"
 
 let value_kind = function
   | Pgenval -> ""
@@ -73,6 +74,7 @@ let boxed_integer_mark name = function
   | Pnativeint -> Printf.sprintf "Nativeint.%s" name
   | Pint32 -> Printf.sprintf "Int32.%s" name
   | Pint64 -> Printf.sprintf "Int64.%s" name
+  | Pint63 -> Printf.sprintf "Int63.%s" name
 
 let print_boxed_integer name ppf bi =
   fprintf ppf "%s" (boxed_integer_mark name bi);;

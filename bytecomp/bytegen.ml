@@ -305,7 +305,8 @@ let comp_bint_primitive bi suff args =
   let pref =
     match bi with Pnativeint -> "caml_nativeint_"
                 | Pint32 -> "caml_int32_"
-                | Pint64 -> "caml_int64_" in
+                | Pint64 -> "caml_int64_"
+                | Pint63 -> "caml_int63_" in
   Kccall(pref ^ suff, List.length args)
 
 let comp_primitive p args =

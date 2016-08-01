@@ -154,7 +154,7 @@ and array_kind =
     Pgenarray | Paddrarray | Pintarray | Pfloatarray
 
 and boxed_integer = Primitive.boxed_integer =
-    Pnativeint | Pint32 | Pint64
+    Pnativeint | Pint32 | Pint64 | Pint63
 
 and bigarray_kind =
     Pbigarray_unknown
