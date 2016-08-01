@@ -380,6 +380,12 @@ CAMLprim value caml_int63_sub(value v1, value v2)
 CAMLprim value caml_int63_mul(value v1, value v2)
 { return Val_long(Long_val(v1) * Long_val(v2)); }
 
+CAMLprim value caml_int63_div(value v1, value v2)
+{ return Val_long(Long_val(v1) / Long_val(v2)); }
+
+CAMLprim value caml_int63_mod(value v1, value v2)
+{ return Val_long(Long_val(v1) % Long_val(v2)); }
+
 CAMLprim value caml_int63_and(value v1, value v2)
 { return Val_long(Long_val(v1) & Long_val(v2)); }
 
@@ -397,6 +403,24 @@ CAMLprim value caml_int63_shift_right(value v1, value v2)
 
 CAMLprim value caml_int63_shift_right_unsigned(value v1, value v2)
 { return Val_long((uint64_t) (Long_val(v1)) >>  Int_val(v2)); }
+
+CAMLprim value caml_int63_of_int32(value v)
+{ return Val_long((int64_t) (Int32_val(v))); }
+
+CAMLprim value caml_int63_to_int32(value v)
+{ return caml_copy_int32((int32_t) (Long_val(v))); }
+
+CAMLprim value caml_int63_of_int64(value v)
+{ return Val_long((int64_t) (Int64_val(v))); }
+
+CAMLprim value caml_int63_to_int64(value v)
+{ return caml_copy_int64((int64_t) (Long_val(v))); }
+
+CAMLprim value caml_int63_of_nativeint(value v)
+{ return Val_long((int64_t) (Nativeint_val(v))); }
+
+CAMLprim value caml_int63_to_nativeint(value v)
+{ return caml_copy_nativeint((intnat) (Long_val(v))); }
 
 /* 64-bit integers */
 

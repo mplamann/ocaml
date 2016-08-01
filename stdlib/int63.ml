@@ -39,6 +39,8 @@ external to_int : t -> int = "%int63_to_int"
  *   [@@unboxed] [@@noalloc] *)
 external of_int32 : int32 -> t = "%int63_of_int32"
 external to_int32 : t -> int32 = "%int63_to_int32"
+external of_int64 : int64 -> t = "%int63_of_int64"
+external to_int64 : t -> int64 = "%int63_to_int64"
 external of_nativeint : nativeint -> t = "%int63_of_nativeint"
 external to_nativeint : t -> nativeint = "%int63_to_nativeint"
 

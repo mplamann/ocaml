@@ -395,6 +395,12 @@ let comp_primitive p args =
   | Pcvtbint(Pint64, Pint32) -> Kccall("caml_int64_to_int32", 1)
   | Pcvtbint(Pnativeint, Pint64) -> Kccall("caml_int64_of_nativeint", 1)
   | Pcvtbint(Pint64, Pnativeint) -> Kccall("caml_int64_to_nativeint", 1)
+  | Pcvtbint(Pint32, Pint63) -> Kccall("caml_int63_of_int32", 1)
+  | Pcvtbint(Pint63, Pint32) -> Kccall("caml_int63_to_int32", 1)
+  | Pcvtbint(Pnativeint, Pint63) -> Kccall("caml_int63_of_nativeint", 1)
+  | Pcvtbint(Pint63, Pnativeint) -> Kccall("caml_int63_to_nativeint", 1)
+  | Pcvtbint(Pint63, Pint64) -> Kccall("caml_int63_to_int64", 1)
+  | Pcvtbint(Pint64, Pint63) -> Kccall("caml_int63_of_int64", 1)
   | Pnegbint bi -> comp_bint_primitive bi "neg" args
   | Paddbint bi -> comp_bint_primitive bi "add" args
   | Psubbint bi -> comp_bint_primitive bi "sub" args

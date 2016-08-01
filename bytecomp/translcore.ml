@@ -272,6 +272,12 @@ let primitives_table = create_hashtable 57 [
   "%int64_asr", Pasrbint Pint64;
   "%int64_of_int", Pbintofint Pint64;
   "%int64_to_int", Pintofbint Pint64;
+  "%nativeint_of_int32", Pcvtbint(Pint32, Pnativeint);
+  "%nativeint_to_int32", Pcvtbint(Pnativeint, Pint32);
+  "%int64_of_int32", Pcvtbint(Pint32, Pint64);
+  "%int64_to_int32", Pcvtbint(Pint64, Pint32);
+  "%int64_of_nativeint", Pcvtbint(Pnativeint, Pint64);
+  "%int64_to_nativeint", Pcvtbint(Pint64, Pnativeint);
   "%int63_neg", Pnegbint Pint63;
   "%int63_add", Paddbint Pint63;
   "%int63_sub", Psubbint Pint63;
@@ -286,12 +292,12 @@ let primitives_table = create_hashtable 57 [
   "%int63_asr", Pasrbint Pint63;
   "%int63_of_int", Pbintofint Pint63;
   "%int63_to_int", Pintofbint Pint63;
-  "%nativeint_of_int32", Pcvtbint(Pint32, Pnativeint);
-  "%nativeint_to_int32", Pcvtbint(Pnativeint, Pint32);
-  "%int64_of_int32", Pcvtbint(Pint32, Pint64);
-  "%int64_to_int32", Pcvtbint(Pint64, Pint32);
-  "%int64_of_nativeint", Pcvtbint(Pnativeint, Pint64);
-  "%int64_to_nativeint", Pcvtbint(Pint64, Pnativeint);
+  "%int63_of_int32", Pcvtbint(Pint32, Pint63);
+  "%int63_to_int32", Pcvtbint(Pint63, Pint32);
+  "%int63_of_int64", Pcvtbint(Pint64, Pint63);
+  "%int63_to_int64", Pcvtbint(Pint63, Pint64);
+  "%int63_of_nativeint", Pcvtbint(Pnativeint, Pint63);
+  "%int63_to_nativeint", Pcvtbint(Pint63, Pnativeint);
   "%caml_ba_ref_1",
     Pbigarrayref(false, 1, Pbigarray_unknown, Pbigarray_unknown_layout);
   "%caml_ba_ref_2",
