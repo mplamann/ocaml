@@ -15,54 +15,54 @@
 
 (* Module [Int64]: 64-bit integers *)
 
-external neg : int64 -> int64 = "%int64_neg"
-external add : int64 -> int64 -> int64 = "%int64_add"
-external sub : int64 -> int64 -> int64 = "%int64_sub"
-external mul : int64 -> int64 -> int64 = "%int64_mul"
-external div : int64 -> int64 -> int64 = "%int64_div"
-external rem : int64 -> int64 -> int64 = "%int64_mod"
-external logand : int64 -> int64 -> int64 = "%int64_and"
-external logor : int64 -> int64 -> int64 = "%int64_or"
-external logxor : int64 -> int64 -> int64 = "%int64_xor"
-external shift_left : int64 -> int -> int64 = "%int64_lsl"
-external shift_right : int64 -> int -> int64 = "%int64_asr"
-external shift_right_logical : int64 -> int -> int64 = "%int64_lsr"
-external of_int : int -> int64 = "%int64_of_int"
-external to_int : int64 -> int = "%int64_to_int"
-external of_float : float -> int64
-  = "caml_int64_of_float" "caml_int64_of_float_unboxed"
-  [@@unboxed] [@@noalloc]
-external to_float : int64 -> float
-  = "caml_int64_to_float" "caml_int64_to_float_unboxed"
-  [@@unboxed] [@@noalloc]
-external of_int32 : int32 -> int64 = "%int64_of_int32"
-external to_int32 : int64 -> int32 = "%int64_to_int32"
-external of_nativeint : nativeint -> int64 = "%int64_of_nativeint"
-external to_nativeint : int64 -> nativeint = "%int64_to_nativeint"
+type t
 
-let zero = 0L
-let one = 1L
-let minus_one = -1L
-let succ n = add n 1L
-let pred n = sub n 1L
-let abs n = if n >= 0L then n else neg n
-let min_int = 0x8000000000000000L
-let max_int = 0x7FFFFFFFFFFFFFFFL
-let lognot n = logxor n (-1L)
+external neg : t -> t = "%int63_neg"
+external add : t -> t -> t = "%int63_add"
+external sub : t -> t -> t = "%int63_sub"
+external mul : t -> t -> t = "%int63_mul"
+external div : t -> t -> t = "%int63_div"
+external rem : t -> t -> t = "%int63_mod"
+external logand : t -> t -> t = "%int63_and"
+external logor : t -> t -> t = "%int63_or"
+external logxor : t -> t -> t = "%int63_xor"
+external shift_left : t -> int -> t = "%int63_lsl"
+external shift_right : t -> int -> t = "%int63_asr"
+external shift_right_logical : t -> int -> t = "%int63_lsr"
+external of_int : int -> t = "%int63_of_int"
+external to_int : t -> int = "%int63_to_int"
+(* external of_float : float -> t
+ *   = "caml_t_of_float" "caml_t_of_float_unboxed"
+ *   [@@unboxed] [@@noalloc]
+ * external to_float : t -> float
+ *   = "caml_t_to_float" "caml_t_to_float_unboxed"
+ *   [@@unboxed] [@@noalloc] *)
+external of_int32 : int32 -> t = "%int63_of_int32"
+external to_int32 : t -> int32 = "%int63_to_int32"
+external of_nativeint : nativeint -> t = "%int63_of_nativeint"
+external to_nativeint : t -> nativeint = "%int63_to_nativeint"
 
-external format : string -> int64 -> string = "caml_int64_format"
-let to_string n = format "%d" n
+let zero = of_int 0
+let one = of_int 1
+let minus_one = of_int (-1)
+let succ n = add n one
+let pred n = sub n one
+let abs n = if n >= zero then n else neg n
+let lognot n = logxor n minus_one
+let max_int = of_int 0x3FFFFFFFFFFFFFFF
+let min_int = of_int 0x4000000000000000
 
-external of_string : string -> int64 = "caml_int64_of_string"
+(* external format : string -> t -> string = "caml_int63_format"
+ * let to_string n = format "%d" n *)
 
-external bits_of_float : float -> int64
-  = "caml_int64_bits_of_float" "caml_int64_bits_of_float_unboxed"
-  [@@unboxed] [@@noalloc]
-external float_of_bits : int64 -> float
-  = "caml_int64_float_of_bits" "caml_int64_float_of_bits_unboxed"
-  [@@unboxed] [@@noalloc]
+(* external of_string : string -> t = "caml_int63_of_string" *)
 
-type t = int64
+(* external bits_of_float : float -> t
+ *   = "caml_t_bits_of_float" "caml_t_bits_of_float_unboxed"
+ *   [@@unboxed] [@@noalloc]
+ * external float_of_bits : t -> float
+ *   = "caml_t_float_of_bits" "caml_t_float_of_bits_unboxed"
+ *   [@@unboxed] [@@noalloc] *)
 
 let compare (x: t) (y: t) = Pervasives.compare x y
 let equal (x: t) (y: t) = compare x y = 0

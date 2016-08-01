@@ -284,6 +284,8 @@ let primitives_table = create_hashtable 57 [
   "%int63_lsl", Plslbint Pint63;
   "%int63_lsr", Plsrbint Pint63;
   "%int63_asr", Pasrbint Pint63;
+  "%int63_of_int", Pbintofint Pint63;
+  "%int63_to_int", Pintofbint Pint63;
   "%nativeint_of_int32", Pcvtbint(Pint32, Pnativeint);
   "%nativeint_to_int32", Pcvtbint(Pnativeint, Pint32);
   "%int64_of_int32", Pcvtbint(Pint32, Pint64);
