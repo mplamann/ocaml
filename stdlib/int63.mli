@@ -45,24 +45,24 @@ external div : t -> t -> t = "%int63_div"
 
 external rem : t -> t -> t = "%int63_mod"
 (** Integer remainder.  If [y] is not zero, the result
-   of [Int64.rem x y] satisfies the following property:
-   [x = Int64.add (Int64.mul (Int64.div x y) y) (Int64.rem x y)].
-   If [y = 0], [Int64.rem x y] raises [Division_by_zero]. *)
+   of [Int63.rem x y] satisfies the following property:
+   [x = Int63.add (Int63.mul (Int63.div x y) y) (Int63.rem x y)].
+   If [y = 0], [Int63.rem x y] raises [Division_by_zero]. *)
 
 val succ : t -> t
-(** Successor.  [Int64.succ x] is [Int64.add x Int64.one]. *)
+(** Successor.  [Int63.succ x] is [Int63.add x Int63.one]. *)
 
 val pred : t -> t
-(** Predecessor.  [Int64.pred x] is [Int64.sub x Int64.one]. *)
+(** Predecessor.  [Int63.pred x] is [Int63.sub x Int63.one]. *)
 
 val abs : t -> t
 (** Return the absolute value of its argument. *)
 
 val max_int : t
-(** The greatest representable 64-bit integer, 2{^63} - 1. *)
+(** The greatest representable 63-bit integer, 2{^62} - 1. *)
 
 val min_int : t
-(** The smallest representable 64-bit integer, -2{^63}. *)
+(** The smallest representable 63-bit integer, -2{^62}. *)
 
 external logand : t -> t -> t = "%int63_and"
 (** Bitwise logical and. *)
@@ -77,55 +77,40 @@ val lognot : t -> t
 (** Bitwise logical negation *)
 
 external shift_left : t -> int -> t = "%int63_lsl"
-(** [Int64.shift_left x y] shifts [x] to the left by [y] bits.
-   The result is unspecified if [y < 0] or [y >= 64]. *)
+(** [Int63.shift_left x y] shifts [x] to the left by [y] bits.
+   The result is unspecified if [y < 0] or [y >= 63]. *)
 
 external shift_right : t -> int -> t = "%int63_asr"
-(** [Int64.shift_right x y] shifts [x] to the right by [y] bits.
+(** [Int63.shift_right x y] shifts [x] to the right by [y] bits.
    This is an arithmetic shift: the sign bit of [x] is replicated
    and inserted in the vacated bits.
-   The result is unspecified if [y < 0] or [y >= 64]. *)
+   The result is unspecified if [y < 0] or [y >= 63]. *)
 
 external shift_right_logical : t -> int -> t = "%int63_lsr"
-(** [Int64.shift_right_logical x y] shifts [x] to the right by [y] bits.
+(** [Int63.shift_right_logical x y] shifts [x] to the right by [y] bits.
    This is a logical shift: zeroes are inserted in the vacated bits
    regardless of the sign of [x].
-   The result is unspecified if [y < 0] or [y >= 64]. *)
+   The result is unspecified if [y < 0] or [y >= 63]. *)
 
 external of_int : int -> t = "%int63_of_int"
-(** Convert the given integer (type [int]) to a 64-bit integer
-    (type [int64]). *)
+(** Convert the given integer (type [int]) to a 63-bit integer
+    (type [int63]). *)
 
 external to_int : t -> int = "%int63_to_int"
-(** Convert the given 64-bit integer (type [int64]) to an
-    integer (type [int]).  On 64-bit platforms, the 64-bit integer
-    is taken modulo 2{^63}, i.e. the high-order bit is lost
-    during the conversion.  On 32-bit platforms, the 64-bit integer
-    is taken modulo 2{^31}, i.e. the top 33 bits are lost
+(** Convert the given 63-bit integer (type [Int63.t]) to an
+    integer (type [int]).  On 64-bit platforms, [int] is 63-bits,
+    so no bits are lost. On 32-bit platforms, the 63-bit integer
+    is taken modulo 2{^31}, i.e. the top 32 bits are lost
     during the conversion. *)
-
-(* external of_float : float -> t
- *   = "caml_int64_of_float" "caml_int64_of_float_unboxed"
- *   [@@unboxed] [@@noalloc]
- * (** Convert the given floating-point number to a 64-bit integer,
- *    discarding the fractional part (truncate towards 0).
- *    The result of the conversion is undefined if, after truncation,
- *    the number is outside the range \[{!Int64.min_int}, {!Int64.max_int}\]. *)
- *
- * external to_float : t -> float
- *   = "caml_int64_to_float" "caml_int64_to_float_unboxed"
- *   [@@unboxed] [@@noalloc]
- * (** Convert the given 64-bit integer to a floating-point number. *) *)
-
 
 external of_int32 : int32 -> t = "%int63_of_int32"
 (** Convert the given 32-bit integer (type [int32])
-   to a 64-bit integer (type [int64]). *)
+   to a 63-bit integer (type [Int63.t]). *)
 
 external to_int32 : t -> int32 = "%int63_to_int32"
-(** Convert the given 64-bit integer (type [int64]) to a
-   32-bit integer (type [int32]). The 64-bit integer
-   is taken modulo 2{^32}, i.e. the top 32 bits are lost
+(** Convert the given 63-bit integer (type [Int63.t]) to a
+   32-bit integer (type [int32]). The 63-bit integer
+   is taken modulo 2{^32}, i.e. the top 31 bits are lost
    during the conversion.  *)
 
 external of_int64 : int64 -> t = "%int63_of_int64"
@@ -133,11 +118,11 @@ external to_int64 : t -> int64 = "%int63_to_int64"
 
 external of_nativeint : nativeint -> t = "%int63_of_nativeint"
 (** Convert the given native integer (type [nativeint])
-   to a 64-bit integer (type [int64]). *)
+   to a 63-bit integer (type [Int63.t]). *)
 
 external to_nativeint : t -> nativeint = "%int63_to_nativeint"
-(** Convert the given 64-bit integer (type [int64]) to a
-   native integer.  On 32-bit platforms, the 64-bit integer
+(** Convert the given 63-bit integer (type [Int63.t]) to a
+   native integer.  On 32-bit platforms, the 63-bit integer
    is taken modulo 2{^32}.  On 64-bit platforms,
    the conversion is exact. *)
 
@@ -153,24 +138,8 @@ external to_nativeint : t -> nativeint = "%int63_to_nativeint"
 (* val to_string : t -> string
  * (** Return the string representation of its argument, in decimal. *) *)
 
-(* external bits_of_float : float -> t
- *   = "caml_int64_bits_of_float" "caml_int64_bits_of_float_unboxed"
- *   [@@unboxed] [@@noalloc]
- * (** Return the internal representation of the given float according
- *    to the IEEE 754 floating-point 'double format' bit layout.
- *    Bit 63 of the result represents the sign of the float;
- *    bits 62 to 52 represent the (biased) exponent; bits 51 to 0
- *    represent the mantissa. *)
- *
- * external float_of_bits : t -> float
- *   = "caml_int64_float_of_bits" "caml_int64_float_of_bits_unboxed"
- *   [@@unboxed] [@@noalloc]
- * (** Return the floating-point number whose internal representation,
- *    according to the IEEE 754 floating-point 'double format' bit layout,
- *    is the given [int64]. *) *)
-
 val compare: t -> t -> int
-(** The comparison function for 64-bit integers, with the same specification as
+(** The comparison function for 63-bit integers, with the same specification as
     {!Pervasives.compare}.  Along with the type [t], this function [compare]
     allows the module [Int64] to be passed as argument to the functors
     {!Set.Make} and {!Map.Make}. *)
