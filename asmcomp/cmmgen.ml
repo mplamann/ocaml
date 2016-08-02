@@ -785,18 +785,21 @@ let box_int_constant bi n =
     Pnativeint -> Uconst_nativeint n
   | Pint32 -> Uconst_int32 (Nativeint.to_int32 n)
   | Pint64 -> Uconst_int64 (Int64.of_nativeint n)
+  | Pint63 -> Uconst_nativeint n
 
 let operations_boxed_int bi =
   match bi with
     Pnativeint -> "caml_nativeint_ops"
   | Pint32 -> "caml_int32_ops"
   | Pint64 -> "caml_int64_ops"
+  | Pint63 -> "caml_int63_ops"
 
 let alloc_header_boxed_int bi =
   match bi with
     Pnativeint -> alloc_boxedintnat_header
   | Pint32 -> alloc_boxedint32_header
   | Pint64 -> alloc_boxedint64_header
+  | Pint63 -> alloc_boxedint64_header
 
 let box_int dbg bi arg =
   match arg with
@@ -804,6 +807,7 @@ let box_int dbg bi arg =
       transl_structured_constant (box_int_constant bi (Nativeint.of_int n))
   | Cconst_natint n ->
       transl_structured_constant (box_int_constant bi n)
+  | _ when bi = Pint63 -> arg
   | _ ->
       let arg' =
         if bi = Pint32 && size_int = 8 && big_endian
@@ -839,6 +843,7 @@ let rec unbox_int bi arg =
   | Cswitch(e, tbl, el) -> Cswitch(e, tbl, Array.map (unbox_int bi) el)
   | Ccatch(n, ids, e1, e2) -> Ccatch(n, ids, unbox_int bi e1, unbox_int bi e2)
   | Ctrywith(e1, id, e2) -> Ctrywith(unbox_int bi e1, id, unbox_int bi e2)
+  | _ when bi = Pint63 -> arg
   | _ ->
       if size_int = 4 && bi = Pint64 then
         split_int64_for_32bit_target arg
@@ -1875,7 +1880,8 @@ and transl_prim_1 env p arg dbg =
       let prim = match bi with
         | Pnativeint -> "nativeint"
         | Pint32 -> "int32"
-        | Pint64 -> "int64" in
+        | Pint64 -> "int64"
+        | Pint63 -> "int63" in
       box_int dbg bi (Cop(Cextcall(Printf.sprintf "caml_%s_direct_bswap" prim,
                                typ_int, false, Debuginfo.none, None),
                       [transl_unbox_int env bi arg]))
