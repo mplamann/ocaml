@@ -2,9 +2,9 @@
 (*                                                                        *)
 (*                                 OCaml                                  *)
 (*                                                                        *)
-(*                            Mitchell Plamann                            *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
 (*                                                                        *)
-(*   Copyright 2016 Institut National de Recherche en Informatique et     *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
 (*     en Automatique.                                                    *)
 (*                                                                        *)
 (*   All rights reserved.  This file is distributed under the terms of    *)
@@ -12,8 +12,6 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-
-(* TODO: Documentation is incorrect *)
 
 type t
 
@@ -126,24 +124,23 @@ external to_nativeint : t -> nativeint = "%int63_to_nativeint"
    is taken modulo 2{^32}.  On 64-bit platforms,
    the conversion is exact. *)
 
-(* external of_string : string -> t = "caml_int63_of_string"
- * (** Convert the given string to a 63-bit integer.
- *    The string is read in decimal (by default) or in hexadecimal,
- *    octal or binary if the string begins with [0x], [0o] or [0b]
- *    respectively.
- *    Raise [Failure "int_of_string"] if the given string is not
- *    a valid representation of an integer, or if the integer represented
- *    exceeds the range of integers representable in type [int64]. *) *)
+external of_string : string -> t = "caml_int63_of_string"
+(** Convert the given string to a 63-bit integer.
+   The string is read in decimal (by default) or in hexadecimal,
+   octal or binary if the string begins with [0x], [0o] or [0b]
+   respectively.
+   Raise [Failure "int_of_string"] if the given string is not
+   a valid representation of an integer, or if the integer represented
+   exceeds the range of integers representable in type [Int63.t]. *)
 
-(* val to_string : t -> string
- * (** Return the string representation of its argument, in decimal. *) *)
+val to_string : t -> string
+(** Return the string representation of its argument, in decimal. *)
 
 val compare: t -> t -> int
 (** The comparison function for 63-bit integers, with the same specification as
     {!Pervasives.compare}.  Along with the type [t], this function [compare]
-    allows the module [Int64] to be passed as argument to the functors
+    allows the module [Int63] to be passed as argument to the functors
     {!Set.Make} and {!Map.Make}. *)
 
 val equal: t -> t -> bool
-(** The equal function for int64s.
-    @since 4.03.0 *)
+(** The equal function for int63s. *)

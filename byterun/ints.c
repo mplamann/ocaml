@@ -66,6 +66,7 @@ static int parse_digit(char c)
 
 #define INT_ERRMSG "int_of_string"
 #define INT32_ERRMSG "Int32.of_string"
+#define INT63_ERRMSG "Int63.of_string"
 #define INT64_ERRMSG "Int64.of_string"
 #define INTNAT_ERRMSG "Nativeint.of_string"
 
@@ -450,7 +451,10 @@ CAMLprim value caml_int63_shift_right(value v1, value v2)
 { return Val_long(Long_val(v1) >> Int_val(v2)); }
 
 CAMLprim value caml_int63_shift_right_unsigned(value v1, value v2)
-{ return Val_long((uint64_t) (Long_val(v1)) >>  Int_val(v2)); }
+{
+  uint64_t result = (uint64_t) (Long_val(v1)) >>  Int_val(v2);
+  fprintf(stderr, "%lX >> %d = %lX\n", Long_val(v1), Int_val(v2), result);
+  return Val_long((uint64_t) ((0x7FFFFFFFFFFFFFFF & Long_val(v1))) >>  Int_val(v2)); }
 
 CAMLprim value caml_int63_of_int32(value v)
 { return Val_long((int64_t) (Int32_val(v))); }
@@ -469,6 +473,53 @@ CAMLprim value caml_int63_of_nativeint(value v)
 
 CAMLprim value caml_int63_to_nativeint(value v)
 { return caml_copy_nativeint((intnat) (Long_val(v))); }
+
+CAMLprim value caml_int63_format(value fmt, value arg)
+{
+  char format_string[FORMAT_BUFFER_SIZE];
+
+  parse_format(fmt, ARCH_INT64_PRINTF_FORMAT, format_string);
+  return caml_alloc_sprintf(format_string, Long_val(arg));
+}
+
+CAMLprim value caml_int63_of_string(value s)
+{
+  char * p;
+  uint64_t res, threshold;
+  int sign, base, signedness, d;
+
+  fprintf(stderr, "int63_of_string %s\n", String_val(s));
+
+  p = parse_sign_and_base(String_val(s), &base, &signedness, &sign);
+  threshold = (((uint64_t) -1) >> 1) / base;
+  d = parse_digit(*p);
+  if (d < 0 || d >= base) caml_failwith(INT63_ERRMSG);
+  res = d;
+  for (p++; /*nothing*/; p++) {
+    char c = *p;
+    if (c == '_') continue;
+    d = parse_digit(c);
+    if (d < 0 || d >= base) break;
+    /* Detect overflow in multiplication base * res */
+    if (res > threshold) caml_failwith(INT63_ERRMSG);
+    res = base * res + d;
+    /* Detect overflow in addition (base * res) + d */
+    if (res < (uint64_t) d) caml_failwith(INT63_ERRMSG);
+  }
+  if (p != String_val(s) + caml_string_length(s)){
+    caml_failwith(INT63_ERRMSG);
+  }
+  if (signedness) {
+    /* Signed representation expected, allow -2^62 to 2^62 - 1 only */
+    if (sign >= 0) {
+      if (res >= (uint64_t)1 << 62) caml_failwith(INT63_ERRMSG);
+    } else {
+      if (res >  (uint64_t)1 << 62) caml_failwith(INT63_ERRMSG);
+    }
+  }
+  if (sign < 0) res = - res;
+  return Val_long(res);
+}
 
 /* 64-bit integers */
 

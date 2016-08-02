@@ -13,7 +13,7 @@
 (*                                                                        *)
 (**************************************************************************)
 
-(* Module [Int64]: 64-bit integers *)
+(* Module [Int63]: 63-bit integers *)
 
 type t
 
@@ -31,12 +31,7 @@ external shift_right : t -> int -> t = "%int63_asr"
 external shift_right_logical : t -> int -> t = "%int63_lsr"
 external of_int : int -> t = "%int63_of_int"
 external to_int : t -> int = "%int63_to_int"
-(* external of_float : float -> t
- *   = "caml_t_of_float" "caml_t_of_float_unboxed"
- *   [@@unboxed] [@@noalloc]
- * external to_float : t -> float
- *   = "caml_t_to_float" "caml_t_to_float_unboxed"
- *   [@@unboxed] [@@noalloc] *)
+
 external of_int32 : int32 -> t = "%int63_of_int32"
 external to_int32 : t -> int32 = "%int63_to_int32"
 external of_int64 : int64 -> t = "%int63_of_int64"
@@ -54,17 +49,10 @@ let lognot n = logxor n minus_one
 let max_int = of_int 0x3FFFFFFFFFFFFFFF
 let min_int = of_int 0x4000000000000000
 
-(* external format : string -> t -> string = "caml_int63_format"
- * let to_string n = format "%d" n *)
+external format : string -> t -> string = "caml_int63_format"
+let to_string n = format "%d" n
 
-(* external of_string : string -> t = "caml_int63_of_string" *)
-
-(* external bits_of_float : float -> t
- *   = "caml_t_bits_of_float" "caml_t_bits_of_float_unboxed"
- *   [@@unboxed] [@@noalloc]
- * external float_of_bits : t -> float
- *   = "caml_t_float_of_bits" "caml_t_float_of_bits_unboxed"
- *   [@@unboxed] [@@noalloc] *)
+external of_string : string -> t = "caml_int63_of_string"
 
 let compare (x: t) (y: t) = Pervasives.compare x y
 let equal (x: t) (y: t) = compare x y = 0
