@@ -53,7 +53,6 @@ let boxed_integer_name = function
   | Pnativeint -> "nativeint"
   | Pint32 -> "int32"
   | Pint64 -> "int64"
-  | Pint63 -> "int63"
 
 let value_kind = function
   | Pgenval -> ""
@@ -74,7 +73,6 @@ let boxed_integer_mark name = function
   | Pnativeint -> Printf.sprintf "Nativeint.%s" name
   | Pint32 -> Printf.sprintf "Int32.%s" name
   | Pint64 -> Printf.sprintf "Int64.%s" name
-  | Pint63 -> Printf.sprintf "Int63.%s" name
 
 let print_boxed_integer name ppf bi =
   fprintf ppf "%s" (boxed_integer_mark name bi);;
@@ -253,6 +251,30 @@ let primitive ppf = function
   | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi
   | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
   | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
+  | Pnegint63 -> fprintf ppf "Int63.neg"
+  | Paddint63 -> fprintf ppf "Int63.add"
+  | Psubint63 -> fprintf ppf "Int63.sub"
+  | Pmulint63 -> fprintf ppf "Int63.mul"
+  | Pdivint63 -> fprintf ppf "Int63.div"
+  | Pmodint63 -> fprintf ppf "Int63.mod"
+  | Pandint63 -> fprintf ppf "Int63.logand"
+  | Porint63  -> fprintf ppf "Int63.logor"
+  | Pxorint63 -> fprintf ppf "Int63.logxor"
+  | Plslint63 -> fprintf ppf "Int63.shift_left"
+  | Plsrint63 -> fprintf ppf "Int63.shift_right_logical"
+  | Pasrint63 -> fprintf ppf "Int63.shift_right"
+  | Pintcomp63 cmp -> fprintf ppf (match cmp with
+    | Ceq -> "=="
+    | Cneq -> "!="
+    | Clt -> "<"
+    | Cgt -> ">"
+    | Cle -> "<="
+    | Cge -> ">="
+  )
+  | Pint63ofint -> fprintf ppf "Int63.of_int"
+  | Pintofint63 -> fprintf ppf "Int63.to_int"
+  | Pbintofint63 bi -> fprintf ppf "Int63.to_%s" (boxed_integer_name bi)
+  | Pint63ofbint bi -> fprintf ppf "Int63.of_%s" (boxed_integer_name bi)
   | Pbigarrayref(unsafe, _n, kind, layout) ->
       print_bigarray "get" unsafe kind ppf layout
   | Pbigarrayset(unsafe, _n, kind, layout) ->
@@ -375,6 +397,23 @@ let name_of_primitive = function
   | Plsrbint _ -> "Plsrbint"
   | Pasrbint _ -> "Pasrbint"
   | Pbintcomp _ -> "Pbintcomp"
+  | Pnegint63 -> "Pnegint63"
+  | Paddint63 -> "Paddint63"
+  | Psubint63 -> "Psubint63"
+  | Pmulint63 -> "Pmulint63"
+  | Pdivint63 -> "Pdivint63"
+  | Pmodint63 -> "Pmodint63"
+  | Pandint63 -> "Pandint63"
+  | Porint63 -> "Porint63"
+  | Pxorint63 -> "Pxorint63"
+  | Plslint63 -> "Plslint63"
+  | Plsrint63 -> "Plsrint63"
+  | Pasrint63 -> "Pasrint63"
+  | Pintcomp63 _ -> "Pintcomp63"
+  | Pint63ofint -> "Pint63ofint"
+  | Pintofint63 -> "Pintofint63"
+  | Pbintofint63 _ -> "Pbintofint63"
+  | Pint63ofbint _ -> "Pint63ofbint"
   | Pbigarrayref _ -> "Pbigarrayref"
   | Pbigarrayset _ -> "Pbigarrayset"
   | Pbigarraydim _ -> "Pbigarraydim"

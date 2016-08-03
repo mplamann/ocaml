@@ -111,6 +111,13 @@ type primitive =
   | Plsrbint of boxed_integer
   | Pasrbint of boxed_integer
   | Pbintcomp of boxed_integer * comparison
+  (* 63-bit integer operations (Int63.t) *)
+  | Pnegint63 | Paddint63 | Psubint63 | Pmulint63 | Pdivint63 | Pmodint63
+  | Pandint63 | Porint63 | Pxorint63
+  | Plslint63 | Plsrint63 | Pasrint63
+  | Pintcomp63 of comparison
+  | Pint63ofint | Pintofint63
+  | Pbintofint63 of boxed_integer | Pint63ofbint of boxed_integer
   (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
   | Pbigarrayref of bool * int * bigarray_kind * bigarray_layout
   | Pbigarrayset of bool * int * bigarray_kind * bigarray_layout
@@ -154,7 +161,7 @@ and array_kind =
     Pgenarray | Paddrarray | Pintarray | Pfloatarray
 
 and boxed_integer = Primitive.boxed_integer =
-    Pnativeint | Pint32 | Pint64 | Pint63
+    Pnativeint | Pint32 | Pint64
 
 and bigarray_kind =
     Pbigarray_unknown

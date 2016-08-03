@@ -1,7 +1,4 @@
 
-
--------- Int63 --------
-
 of_int, to_int
  1... 2... 3... 4... 5...
 of_string
@@ -34,3 +31,12 @@ shift_right_logical
  1... 2... 3... 4... 5... 6... 7...
 Comparisons
  1... 2... 3... 4... 5... 6... 7...
+
+--------- Conversions -----------
+
+nativeint of/to Int63.t
+ 1... 2...
+int64 of/to Int63.t
+ 1... 2... 3...
+Int63.t of/to nativeint
+ 1... 2... 3...

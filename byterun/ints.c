@@ -363,7 +363,6 @@ static int int63_cmp(value v1, value v2)
 {
   int64_t i1 = Long_val(v1);
   int64_t i2 = Long_val(v2);
-  printf("int63_cmp passed in values v1=%ld and v2=%ld\n", i1, i2);
   return (i1 > i2) - (i1 < i2);
 }
 
@@ -377,7 +376,6 @@ static intnat int63_hash(value v)
 static void int63_serialize(value v, uintnat * bsize_32,
                             uintnat * bsize_64)
 {
-  printf("Called int63_serialize, good luck!\n");
   caml_serialize_int_8(Long_val(v));
   *bsize_32 = *bsize_64 = 8;
 }
@@ -385,7 +383,6 @@ static void int63_serialize(value v, uintnat * bsize_32,
 static uintnat int63_deserialize(void * dst)
 {
   // TODO: Modify for int63
-  printf("Called int63_deserialize, dunno what to do!\n");
 #ifndef ARCH_ALIGN_INT64
   *((int64_t *) dst) = caml_deserialize_sint_8();
 #else
@@ -451,10 +448,7 @@ CAMLprim value caml_int63_shift_right(value v1, value v2)
 { return Val_long(Long_val(v1) >> Int_val(v2)); }
 
 CAMLprim value caml_int63_shift_right_unsigned(value v1, value v2)
-{
-  uint64_t result = (uint64_t) (Long_val(v1)) >>  Int_val(v2);
-  fprintf(stderr, "%lX >> %d = %lX\n", Long_val(v1), Int_val(v2), result);
-  return Val_long((uint64_t) ((0x7FFFFFFFFFFFFFFF & Long_val(v1))) >>  Int_val(v2)); }
+{ return Val_long((uint64_t) ((0x7FFFFFFFFFFFFFFF & Long_val(v1))) >>  Int_val(v2)); }
 
 CAMLprim value caml_int63_of_int32(value v)
 { return Val_long((int64_t) (Int32_val(v))); }
@@ -488,8 +482,6 @@ CAMLprim value caml_int63_of_string(value s)
   uint64_t res, threshold;
   int sign, base, signedness, d;
 
-  fprintf(stderr, "int63_of_string %s\n", String_val(s));
-
   p = parse_sign_and_base(String_val(s), &base, &signedness, &sign);
   threshold = (((uint64_t) -1) >> 1) / base;
   d = parse_digit(*p);
@@ -518,6 +510,7 @@ CAMLprim value caml_int63_of_string(value s)
     }
   }
   if (sign < 0) res = - res;
+
   return Val_long(res);
 }
 
