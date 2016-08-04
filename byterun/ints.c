@@ -398,8 +398,8 @@ static uintnat int63_deserialize(void * dst)
 #define Int63_val(x) (Long_val(x))
 #define Val_int63(x) (Val_long(x))
 #else
-#define Int63_val(x) (Long_val(Int64_val(x)))
-#define Val_int63(x) (caml_copy_int64(Val_long(x)))
+#define Int63_val(x) ((Int64_val(x)) >> 1)
+#define Val_int63(x) (caml_copy_int64( ((uint64_t) (((uint64_t)(x) << 1)) + 1)))
 #endif
 
 CAMLexport struct custom_operations caml_int63_ops = {

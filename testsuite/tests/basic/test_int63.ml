@@ -16,7 +16,7 @@ let test_strings test_number answer correct_answer =
  flush stdout;
  flush stderr;
  if answer <> correct_answer then begin
-   eprintf "*** Bad result (%s, test %d): expected %s, got %s\n" !function_tested test_number correct_answer answer;
+   eprintf "*** Bad result (%s, test %d): expected \"%s\", got \"%s\"\n" !function_tested test_number correct_answer answer;
    flush stderr;
    error_occurred := true
  end else begin

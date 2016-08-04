@@ -1224,7 +1224,7 @@ let simplif_primitive_32bits = function
   | Porint63  -> Pccall (default_prim "caml_int63_or")
   | Pxorint63 -> Pccall (default_prim "caml_int63_xor")
   | Plslint63 -> Pccall (default_prim "caml_int63_shift_left")
-  | Plsrint63 -> Pccall (default_prim "caml_int63_shift_right_logical")
+  | Plsrint63 -> Pccall (default_prim "caml_int63_shift_right_unsigned")
   | Pasrint63 -> Pccall (default_prim "caml_int63_shift_right")
   | Pintcomp63 Lambda.Ceq -> Pccall (default_prim "caml_equal")
   | Pintcomp63 Lambda.Cneq -> Pccall (default_prim "caml_notequal")
