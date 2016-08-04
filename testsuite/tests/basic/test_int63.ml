@@ -27,8 +27,8 @@ let test_int63 test_number answer correct_answer =
  flush stdout;
  flush stderr;
  if answer <> correct_answer then begin
-   eprintf "*** Bad result (%s, test %d): expected %d, got %d\n" !function_tested test_number
-     (Int63.to_int correct_answer) (Int63.to_int answer);
+   eprintf "*** Bad result (%s, test %d): expected %s, got %s\n" !function_tested test_number
+     (Int63.to_string correct_answer) (Int63.to_string answer);
    flush stderr;
    error_occurred := true
  end else begin

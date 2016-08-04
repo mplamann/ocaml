@@ -39,6 +39,11 @@ external to_int64 : t -> int64 = "%int63_to_int64"
 external of_nativeint : nativeint -> t = "%int63_of_nativeint"
 external to_nativeint : t -> nativeint = "%int63_to_nativeint"
 
+external format : string -> t -> string = "caml_int63_format"
+let to_string n = format "%d" n
+
+external of_string : string -> t = "caml_int63_of_string"
+
 let zero = of_int 0
 let one = of_int 1
 let minus_one = of_int (-1)
@@ -46,13 +51,8 @@ let succ n = add n one
 let pred n = sub n one
 let abs n = if n >= zero then n else neg n
 let lognot n = logxor n minus_one
-let max_int = of_int 0x3FFFFFFFFFFFFFFF
-let min_int = of_int 0x4000000000000000
-
-external format : string -> t -> string = "caml_int63_format"
-let to_string n = format "%d" n
-
-external of_string : string -> t = "caml_int63_of_string"
+let max_int = of_string "0x3FFFFFFFFFFFFFFF"
+let min_int = of_string "0x4000000000000000"
 
 let compare (x: t) (y: t) = Pervasives.compare x y
 let equal (x: t) (y: t) = compare x y = 0

@@ -383,7 +383,7 @@ static void int63_serialize(value v, uintnat * bsize_32,
 static uintnat int63_deserialize(void * dst)
 {
   // TODO: Modify for int63
-#ifndef ARCH_ALIGN_INT64
+#ifndef ARCH_SIXTYFOUR
   *((int64_t *) dst) = caml_deserialize_sint_8();
 #else
   union { int32_t i[2]; int64_t j; } buffer;
@@ -393,6 +393,14 @@ static uintnat int63_deserialize(void * dst)
 #endif
   return 8;
 }
+
+#ifdef ARCH_SIXTYFOUR
+#define Int63_val(x) (Long_val(x))
+#define Val_int63(x) (Val_long(x))
+#else
+#define Int63_val(x) (Long_val(Int64_val(x)))
+#define Val_int63(x) (caml_copy_int64(Val_long(x)))
+#endif
 
 CAMLexport struct custom_operations caml_int63_ops = {
   "_k",
@@ -406,74 +414,84 @@ CAMLexport struct custom_operations caml_int63_ops = {
 
 CAMLprim value caml_int63_of_int(value v)
 { // TODO: Support 32-bit machines
-  return v;
+  return Val_int63(Long_val(v));
 }
 
 CAMLprim value caml_int63_to_int(value v)
 { // TODO: Support 32-bit machines
-  return v;
+  return Val_long(Int63_val(v));
+}
+
+CAMLprim value caml_int63_equal(value v1, value v2)
+{
+  return Val_bool(Int63_val(v1) == Int63_val(v2));
+}
+
+CAMLprim value caml_int63_notequal(value v1, value v2)
+{
+  return Val_bool(Int63_val(v1) != Int63_val(v2));
 }
 
 CAMLprim value caml_int63_neg(value v)
-{ return Val_long(- Long_val(v)); }
+{ return Val_int63(- Int63_val(v)); }
 
 CAMLprim value caml_int63_add(value v1, value v2)
-{ return Val_long(Long_val(v1) + Long_val(v2)); }
+{ return Val_int63(Int63_val(v1) + Int63_val(v2)); }
 
 CAMLprim value caml_int63_sub(value v1, value v2)
-{ return Val_long(Long_val(v1) - Long_val(v2)); }
+{ return Val_int63(Int63_val(v1) - Int63_val(v2)); }
 
 CAMLprim value caml_int63_mul(value v1, value v2)
-{ return Val_long(Long_val(v1) * Long_val(v2)); }
+{ return Val_int63(Int63_val(v1) * Int63_val(v2)); }
 
 CAMLprim value caml_int63_div(value v1, value v2)
-{ return Val_long(Long_val(v1) / Long_val(v2)); }
+{ return Val_int63(Int63_val(v1) / Int63_val(v2)); }
 
 CAMLprim value caml_int63_mod(value v1, value v2)
-{ return Val_long(Long_val(v1) % Long_val(v2)); }
+{ return Val_int63(Int63_val(v1) % Int63_val(v2)); }
 
 CAMLprim value caml_int63_and(value v1, value v2)
-{ return Val_long(Long_val(v1) & Long_val(v2)); }
+{ return Val_int63(Int63_val(v1) & Int63_val(v2)); }
 
 CAMLprim value caml_int63_or(value v1, value v2)
-{ return Val_long(Long_val(v1) | Long_val(v2)); }
+{ return Val_int63(Int63_val(v1) | Int63_val(v2)); }
 
 CAMLprim value caml_int63_xor(value v1, value v2)
-{ return Val_long(Long_val(v1) ^ Long_val(v2)); }
+{ return Val_int63(Int63_val(v1) ^ Int63_val(v2)); }
 
 CAMLprim value caml_int63_shift_left(value v1, value v2)
-{ return Val_long(Long_val(v1) << Int_val(v2)); }
+{ return Val_int63(Int63_val(v1) << Int_val(v2)); }
 
 CAMLprim value caml_int63_shift_right(value v1, value v2)
-{ return Val_long(Long_val(v1) >> Int_val(v2)); }
+{ return Val_int63(Int63_val(v1) >> Int_val(v2)); }
 
 CAMLprim value caml_int63_shift_right_unsigned(value v1, value v2)
-{ return Val_long((uint64_t) ((0x7FFFFFFFFFFFFFFF & Long_val(v1))) >>  Int_val(v2)); }
+{ return Val_int63((uint64_t) ((0x7FFFFFFFFFFFFFFF & Int63_val(v1))) >>  Int_val(v2)); }
 
 CAMLprim value caml_int63_of_int32(value v)
-{ return Val_long((int64_t) (Int32_val(v))); }
+{ return Val_int63((int64_t) (Int32_val(v))); }
 
 CAMLprim value caml_int63_to_int32(value v)
-{ return caml_copy_int32((int32_t) (Long_val(v))); }
+{ return caml_copy_int32((int32_t) (Int63_val(v))); }
 
 CAMLprim value caml_int63_of_int64(value v)
-{ return Val_long((int64_t) (Int64_val(v))); }
+{ return Val_int63((int64_t) (Int64_val(v))); }
 
 CAMLprim value caml_int63_to_int64(value v)
-{ return caml_copy_int64((int64_t) (Long_val(v))); }
+{ return caml_copy_int64((int64_t) (Int63_val(v))); }
 
 CAMLprim value caml_int63_of_nativeint(value v)
-{ return Val_long((int64_t) (Nativeint_val(v))); }
+{ return Val_int63((int64_t) (Nativeint_val(v))); }
 
 CAMLprim value caml_int63_to_nativeint(value v)
-{ return caml_copy_nativeint((intnat) (Long_val(v))); }
+{ return caml_copy_nativeint((intnat) (Int63_val(v))); }
 
 CAMLprim value caml_int63_format(value fmt, value arg)
 {
   char format_string[FORMAT_BUFFER_SIZE];
 
   parse_format(fmt, ARCH_INT64_PRINTF_FORMAT, format_string);
-  return caml_alloc_sprintf(format_string, Long_val(arg));
+  return caml_alloc_sprintf(format_string, Int63_val(arg));
 }
 
 CAMLprim value caml_int63_of_string(value s)
@@ -511,7 +529,7 @@ CAMLprim value caml_int63_of_string(value s)
   }
   if (sign < 0) res = - res;
 
-  return Val_long(res);
+  return Val_int63(res);
 }
 
 /* 64-bit integers */
