@@ -112,7 +112,14 @@ external to_int32 : t -> int32 = "%int63_to_int32"
    during the conversion.  *)
 
 external of_int64 : int64 -> t = "%int63_of_int64"
+(** Convert the given 64-bit intger (type [int64]) to a
+   63-bit integer (type [Int63.t]). The 64-bit integer is
+   taken modulo 2{^63}, i.e. the top bit is lost during
+   the conversion. *)
+
 external to_int64 : t -> int64 = "%int63_to_int64"
+(** Convert the given 63-bit integer (type [Int63.t]) to
+   a 64-bit integer (type [int64]). The conversion is exact. *)
 
 external of_nativeint : nativeint -> t = "%int63_of_nativeint"
 (** Convert the given native integer (type [nativeint])

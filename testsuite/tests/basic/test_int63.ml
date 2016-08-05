@@ -61,34 +61,6 @@ let test test_number answer correct_answer =
 
 (***** Tests on 63 bit arithmetic *****)
 
-module type TESTSIG = sig
-  type t
-  module Ops : sig
-    val neg: t -> t
-    val add: t -> t -> t
-    val sub: t -> t -> t
-    val mul: t -> t -> t
-    val div: t -> t -> t
-    val rem: t -> t -> t
-    val logand: t -> t -> t
-    val logor: t -> t -> t
-    val logxor: t -> t -> t
-    val shift_left: t -> int -> t
-    val shift_right: t -> int -> t
-    val shift_right_logical: t -> int -> t
-    val of_int: int -> t
-    val to_int: t -> int
-    val zero: t
-    val one: t
-    val minus_one: t
-    val min_int: t
-    val max_int: t
-    val to_string: t -> string
-    val of_string: string -> t
-  end
-  val testcomp: t -> t -> bool*bool*bool*bool*bool*bool*int
-end
-
 let testcomp_int63 (a : Int63.t) (b : Int63.t) =
   (a = b, a <> b, a < b, a > b, a <= b, a >= b, compare a b)
 
@@ -305,19 +277,19 @@ struct
            (false,true,false,true,false,true,1);
 
     print_newline(); testing_function "--------- Conversions -----------";
-    testing_function "nativeint of/to Int63.t";
-    test 1 (Int63.to_nativeint (Int63.of_string "0x12345678"))
-      (Nativeint.of_string "0x12345678");
-    test 2 (Int63.of_nativeint (Nativeint.of_string "0x12345678"))
+    testing_function "Int32 of/to Int63.t";
+    test 1 (Int63.to_int32 (Int63.of_string "0x12345678"))
+      (Int32.of_string "0x12345678");
+    test 2 (Int63.of_int32 (Int32.of_string "0x12345678"))
       (Int63.of_string "0x12345678");
+    test 3 (Int63.to_int32 (Int63.of_string "0x123456789ABCDEF0"))
+      (Int32.of_string "0x9ABCDEF0");
 
     testing_function "int64 of/to Int63.t";
     test 1 (Int63.to_int64 (Int63.of_string "-0x12345678"))
       (Int64.of_string "-0x12345678");
-    test 2 (Int63.to_int32 (Int63.of_string "-0x12345678"))
-      (Int32.of_string "-0x12345678");
-    test 3 (Int63.to_int32 (Int63.of_string "0x123456789ABCDEF0"))
-      (Int32.of_string "0x9ABCDEF0");
+    test 2 (Int63.to_int64 (Int63.of_string "0x1234567812345678"))
+      (Int64.of_string "0x1234567812345678");
 
     testing_function "Int63.t of/to nativeint";
     test 1 (Int63.of_nativeint (Nativeint.of_string "0x12345678"))

@@ -359,14 +359,6 @@ CAMLprim value caml_int32_float_of_bits(value vi)
 
 /* 63-bit integers */
 
-#ifdef ARCH_SIXTYFOUR
-#define Int63_val(x) (Long_val(x))
-#define Val_int63(x) (Val_long(x))
-#else
-#define Int63_val(x) ((Int64_val(x)) >> 1)
-#define Val_int63(x) (caml_copy_int64( ((uint64_t) (((uint64_t)(x) << 1)) + 1)))
-#endif
-
 CAMLprim value caml_int63_of_int(value v)
 { return Val_int63(Long_val(v)); }
 
