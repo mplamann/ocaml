@@ -1242,6 +1242,26 @@ let simplif_primitive_32bits = function
   | Pint63ofbint Pnativeint -> Pccall (default_prim "caml_int63_of_nativeint")
   | p -> p
 
+let simplif_primitive_64bits = function
+  | Pnegint63 -> Pnegint
+  | Paddint63 -> Paddint
+  | Psubint63 -> Psubint
+  | Pmulint63 -> Pmulint
+  | Pdivint63 -> Pdivint
+  | Pmodint63 -> Pmodint
+  | Pandint63 -> Pandint
+  | Porint63 -> Porint
+  | Pxorint63 -> Pxorint
+  | Plslint63 -> Plslint
+  | Plsrint63 -> Plsrint
+  | Pasrint63 -> Pasrint
+  | Pintcomp63 comp -> Pintcomp comp
+  | Pbintofint63 bi -> Pbintofint bi
+  | Pint63ofbint bi -> Pintofbint bi
+  | Pint63ofint -> Pidentity
+  | Pintofint63 -> Pidentity
+  | p -> p
+
 let simplif_primitive p =
   match p with
   | Pduprecord _ ->
@@ -1255,7 +1275,7 @@ let simplif_primitive p =
   | Pbigarrayset(_unsafe, n, _kind, Pbigarray_unknown_layout) ->
       Pccall (default_prim ("caml_ba_set_" ^ string_of_int n))
   | p ->
-      if size_int = 8 then p else simplif_primitive_32bits p
+      if size_int = 8 then simplif_primitive_64bits p else simplif_primitive_32bits p
 
 (* Build switchers both for constants and blocks *)
 
@@ -1489,6 +1509,11 @@ let strmatch_compile =
         let transl_switch = transl_int_switch
       end) in
   S.compile
+
+let name_for_boxed_integer = function
+  | Pnativeint -> "nativeint"
+  | Pint32 -> "int32"
+  | Pint64 -> "int64"
 
 let rec transl env e =
   match e with
@@ -1898,10 +1923,7 @@ and transl_prim_1 env p arg dbg =
   | Pnegbint bi ->
       box_int dbg bi (Cop(Csubi, [Cconst_int 0; transl_unbox_int env bi arg]))
   | Pbbswap bi ->
-      let prim = match bi with
-        | Pnativeint -> "nativeint"
-        | Pint32 -> "int32"
-        | Pint64 -> "int64" in
+      let prim = name_for_boxed_integer bi in
       box_int dbg bi (Cop(Cextcall(Printf.sprintf "caml_%s_direct_bswap" prim,
                                typ_int, false, Debuginfo.none, None),
                       [transl_unbox_int env bi arg]))
@@ -1909,25 +1931,6 @@ and transl_prim_1 env p arg dbg =
       tag_int (Cop(Cextcall("caml_bswap16_direct", typ_int, false,
                             Debuginfo.none, None),
                    [untag_int (transl env arg)]))
-  (* 63-bit integer operations *)
-  | Pnegint63 ->
-    Cop(Csubi, [Cconst_int 2; transl env arg])
-  | Pint63ofint -> transl env arg
-  | Pintofint63 -> transl env arg
-  | Pint63ofbint bi ->
-      let prim = match bi with
-        | Pnativeint -> "nativeint"
-        | Pint32 -> "int32"
-        | Pint64 -> "int64" in
-      Cop(Cextcall(Printf.sprintf "caml_int63_of_%s" prim, typ_int, false, Debuginfo.none, None),
-          [transl env arg])
-  | Pbintofint63 bi ->
-      let prim = match bi with
-        | Pnativeint -> "nativeint"
-        | Pint32 -> "int32"
-        | Pint64 -> "int64" in
-      Cop(Cextcall(Printf.sprintf "caml_int63_to_%s" prim, typ_int, false, Debuginfo.none, None),
-         [transl env arg])
   | prim ->
       fatal_errorf "Cmmgen.transl_prim_1: %a" Printlambda.primitive prim
 
@@ -2203,51 +2206,6 @@ and transl_prim_2 env p arg1 arg2 dbg =
       tag_int (Cop(Ccmpi(transl_comparison cmp),
                      [transl_unbox_int env bi arg1;
                       transl_unbox_int env bi arg2]))
-
-  (* 63-bit integer operations *)
-  | Paddint63 ->
-      decr_int(add_int (transl env arg1) (transl env arg2))
-  | Psubint63 ->
-      incr_int(sub_int (transl env arg1) (transl env arg2))
-  | Pmulint63 ->
-     begin
-       (* decrementing the non-constant part helps when the multiplication is
-          followed by an addition;
-          for example, using this trick compiles (100 * a + 7) into
-            (+ ( * a 100) -85)
-          rather than
-            (+ ( * 200 (>>s a 1)) 15)
-        *)
-       match transl env arg1, transl env arg2 with
-         | Cconst_int _ as c1, c2 ->
-             incr_int (mul_int (untag_int c1) (decr_int c2))
-         | c1, c2 -> incr_int (mul_int (decr_int c1) (untag_int c2))
-     end
-  | Pdivint63 ->
-      tag_int(div_int (untag_int(transl env arg1))
-        (untag_int(transl env arg2)) dbg)
-  | Pmodint63 ->
-      tag_int(mod_int (untag_int(transl env arg1))
-        (untag_int(transl env arg2)) dbg)
-  | Pandint63 ->
-      Cop(Cand, [transl env arg1; transl env arg2])
-  | Porint63 ->
-      Cop(Cor, [transl env arg1; transl env arg2])
-  | Pxorint63 ->
-      Cop(Cor, [Cop(Cxor, [ignore_low_bit_int(transl env arg1);
-                           ignore_low_bit_int(transl env arg2)]);
-                Cconst_int 1])
-  | Plslint63 ->
-      incr_int(lsl_int (decr_int(transl env arg1)) (untag_int(transl env arg2)))
-  | Plsrint63 ->
-      Cop(Cor, [lsr_int (transl env arg1) (untag_int(transl env arg2));
-                Cconst_int 1])
-  | Pasrint63 ->
-      Cop(Cor, [asr_int (transl env arg1) (untag_int(transl env arg2));
-                Cconst_int 1])
-  | Pintcomp63 cmp ->
-      tag_int(Cop(Ccmpi(transl_comparison cmp),
-                  [transl env arg1; transl env arg2]))
   | prim ->
       fatal_errorf "Cmmgen.transl_prim_2: %a" Printlambda.primitive prim
 
